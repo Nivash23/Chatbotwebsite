@@ -1,0 +1,295 @@
+*{
+    margin:0px;
+    border:0px;
+    font-family: sans-serif;
+}
+
+#wholecontainer{
+    display:flex;
+    justify-content: center;
+    align-items: center;
+    width:100vw;
+    height:100vh;
+    background-color: rgb(245, 249, 252);
+}
+#chatbotcontainer{
+    width:90vw;
+    height:90vh;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 5px -5px 5px rgb(213, 212, 212),-5px 5px 5px rgb(213, 212, 212) ;
+}
+#chatbotcontainer{
+    display:grid;
+    grid-template-columns:2fr 1fr;
+}
+#startchatbut{
+    width:150px;
+    height:40px;
+    border-radius: 7px;
+    background-color: rgb(33, 89, 232);
+    border:none;
+    color:white;
+    font-weight: bold;
+    font-size: 18px;
+    margin-top: 20px;
+}
+#chatbotdesign{
+    background-color: rgb(79, 70, 140);
+    color:white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding:10px;
+}
+#chatbotdesign #head{
+    font-size: 3rem;
+    font-weight: bold;
+    width:350px;
+    margin-bottom: 20px;
+
+}
+#logininputfields{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+#logininputfields > div{
+    width:70%;
+    height:80%;
+    margin-left: 20px;
+    /* background-color: aqua; */
+}
+#logininputfields .head{
+    font-weight: bold;
+    font-size: 22px;
+}
+#logininputfields .field{
+    margin-top: 20px;
+}
+#logininputfields input{
+    width:100%;
+    height:30px;
+    margin-top: 15px;
+    padding:5px;
+    font-size: 16px;
+    border-radius: 7px;
+    outline: none;
+    border: 1px solid rgb(125, 125, 125);
+
+}
+#loginbut{
+    width:100%;
+    height:40px;
+    padding:5px;
+    margin:20px 0px 20px 10px;
+    background-color: rgb(21, 84, 245);
+    color:white;
+    font-weight: bold;
+    font-size: 17px;
+    border-radius: 7px;
+    cursor: pointer;
+}
+
+.Loadinactive{
+    display: none;
+}
+.Loadactive{
+  display: block;
+ 
+}
+#registerbut{
+    width:100%;
+    height:40px;
+    padding:5px;
+    margin:20px 0px 20px 10px;
+    background-color: rgb(21, 84, 245);
+    color:white;
+    font-weight: bold;
+    font-size: 17px;
+    border-radius: 7px;
+    cursor: pointer;
+}
+.Reginactive{
+    display: none;
+}
+.Regactive{
+    display:block;
+}
+.Loggedactive{
+    display: block;
+}
+.Loggedinactive{
+    display: none;
+}
+.Loginactive{
+    display: none;
+}
+.Logactive{
+    display:block;
+}
+.Forgotinactive{
+    display:none
+}
+.Forgotactive{
+    display: block;
+}
+#logoutbut{
+    width:150px;
+    height:35px;
+    padding:5px;
+    font-size: 16px;
+    background-color: rgb(21, 84, 245) ;
+    border-radius: 7px;
+    color:white;
+    font-weight: bold;
+    margin-top: 20px;
+    cursor: pointer;
+}
+#forgotpassbut{
+    width:150px;
+    height:35px;
+    padding:5px;
+    font-size: 16px;
+    background-color: rgb(21, 84, 245) ;
+    border-radius: 7px;
+    color:white;
+    font-weight: bold;
+    margin-top: 20px;
+    cursor: pointer;
+}
+#chatlayout{
+    width:70%;
+    height:80%;
+    background-color:rgb(245, 245, 245);
+    border-radius: 10px;
+    display: grid;
+    grid-template-columns: 0.6fr 2fr;
+    overflow: hidden;
+    box-shadow: 5px 5px 14px rgb(199, 199, 199),-2px -2px 6px rgb(218, 217, 217);
+}
+#chattingcontainer #chatlogo{
+    font-size: 28px;
+    font-weight: bold;
+    color:rgb(78, 78, 78);
+}
+#chattingcontainer #navheader{
+    display: flex;
+    flex:2;
+    height:60px;
+    align-items: center;
+}
+#chatlogo{
+    flex:1.5;
+    margin-left: 30px;
+}
+#useraccount{
+    flex:0.5;
+    font-size: 20px;
+    font-weight: bold;
+}
+#chatlayout .sidemenu{
+    display: flex;
+    justify-content: center;
+    gap:20px;
+    padding:10px 0px 10px 0px;
+    cursor: pointer;
+}
+.sidemenu:hover{
+    background-color: aliceblue;
+}
+#chattingcontainer #Messageplate{
+  width:80%;
+  margin:20px 0px 10px 0px;
+  height:65%;
+}
+#chattingcontainer #Inputmessage{
+    display: flex;
+    justify-content: center;
+}
+#Inputmessage > div{
+    width:90%;
+    height:55px;
+    background-color:rgb(230, 230, 230);
+    border-radius: 20px;
+    overflow: hidden;
+    display: flex;
+}
+#Inputmessage input{
+    width:92%;
+    /* height:80%; */
+    font-size: 15px;
+    padding:3px 3px 3px 15px;
+    height: 100%;
+    outline: none;
+    background-color:transparent;
+
+
+}
+.Chatinactive{
+    #chatcreationbackground{
+        display:none ;
+    }
+    #chatcreationbox{
+        display: none;
+    }
+}
+.Chatactive{
+    #chatcreationbackground{
+        display:block;
+    }
+    #chatcreationbox{
+        display: block;
+    }
+}
+#chatcreationbackground{
+    width:100vw;
+
+    height:110vh;
+    position: fixed;
+    background-color: aliceblue;
+    z-index: 1;
+    margin:-360px 0px 0px -1300px ;
+    
+   
+}
+#chatcreationbox{
+    width:300px;
+    height:250px;
+    background-color: rgb(199, 199, 199);
+    padding:0px 10px 10px 10px;
+    border-radius: 10px;
+    
+    /* position: absolute; */
+}
+#chatcreationbox #xclose{
+    padding:2px;
+    background-color: red;
+    color:black;
+    text-align: center;
+    width:50px;
+    border-top-right-radius: 10px;
+    height:20px;
+    margin:0px 0px 0px 255px;
+}
+#chatcreationbox button{
+    padding:5px;
+    width:140px;
+    height:30px;
+    border-radius: 5px;
+    background-color: rgb(72, 72, 193);
+    font-size: 16px;
+    font-weight: 700;
+    color:white;
+    cursor: pointer;
+}
+#chatcreationbox input{
+    width:250px;
+    height:25px;
+    padding:3px;
+    font-size: 16px;
+    border-radius: 7px;
+}
+#chatcreationbox div{
+    margin-top: 20px;
+}

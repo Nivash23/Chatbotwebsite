@@ -13,6 +13,7 @@ import { ApolloProvider, ApolloClient, split, InMemoryCache, HttpLink } from '@a
 import { createClient } from 'graphql-ws'
 import { getMainDefinition } from '@apollo/client/utilities'
 import { GraphQLWsLink } from '@apollo/client/link/subscriptions'
+import Forgotpasspage from '../Components/Forgotpasspage.jsx'
 
 
 
@@ -46,6 +47,10 @@ const Routes = createBrowserRouter([
             {
                 path: "/chatpage",
                 element:<Chattingpage/>
+            },
+            {
+                path: "/forgotpass",
+                element:<Forgotpasspage/>
         }]
     }
 ])

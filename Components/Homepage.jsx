@@ -32,7 +32,9 @@ function Homepage() {
     const [registerstatus, setRegisterstatus] = useState("Reginactive");
   const [loginstatus, setLoginstatus] = useState("Logactive");
   const [loggedinuserpage, setLoggedinuserpage] = useState("Loggedinactive");
-    const {
+  const [logpageResponsemsg, setLogpageResponsemsg] = useState("");
+  const [logpagemsgcolor, setLogpagemsgcolor] = useState("black");
+  const {
         signUpEmailPassword,
         isLoading: signUpLoading,
         error: signUpError,
@@ -72,6 +74,11 @@ function Homepage() {
           // alert(`Registerd User ${result.user.displayName}`);
           setRegisterstatus("Reginactive");
           setLoginstatus("Logactive");
+          setRegdetails({
+            email: "",
+            name: "",
+            password:""
+          })
           // setLoadingstatus('Logactive');
             return;
         } else {
@@ -90,15 +97,19 @@ function Homepage() {
         if (!result.error) {
             // setLoadingstatus("Loadinactive");
             setLogindetails({ email: "", password: "" });
-          alert("User Login Sucessfully..");
+          // alert("User Login Sucessfully..");
           setLoginstatus("Loginactive");
           setLoggedinuserpage("Loggedactive")
+          setLogpagemsgcolor('green');
+          setLogpageResponsemsg("User Login Sucessfully..")
       
         
     
         } else {
     
-            alert(`SignIn failed : ${result.error.message}`);
+          // alert(`SignIn failed : ${result.error.message}`);
+          setLogpagemsgcolor("red");
+          setLogpageResponsemsg(result.error.message)
           // setLoadingstatus('Loadinactive');
         }
         // alert('Hello')
@@ -268,6 +279,9 @@ function Homepage() {
                   </span>
                 </div>
               </div>
+              <div style={{display:"flex",justifyContent:"center"}} >
+                <div style={{color:logpagemsgcolor}}>{logpageResponsemsg}</div>
+              </div>
             </div>
           </form>
           <form onSubmit={handleregister}>
@@ -356,6 +370,12 @@ function Homepage() {
                 </div>
                 <div style={{display:"flex",justifyContent:"center"}}>
                   <button type="submit" id="forgotpassbut">Get Request</button>
+                </div>
+                <div style={{display:"flex",justifyContent:"center",marginTop:"20px",color:"lightpink"}}>
+                  <div style={{ cursor: "pointer" }} onClick={() => {
+                    setForgotpassStatus("Forgotinactive"); 
+                    setLoginstatus("Logactive")
+                  }}>Go to loginpage{">>"}</div>
                 </div>
               </div>
             </div>

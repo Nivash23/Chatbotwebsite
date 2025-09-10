@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react'
-import {FaMessage,FaClockRotateLeft, FaUser,FaGear,FaTelegram} from 'react-icons/fa6'
+import {FaMessage,FaPlus, FaUser,FaGear,FaTelegram} from 'react-icons/fa6'
 import messgeicon from '../images/messgeimg.webp'
 import { useSelector } from 'react-redux'
 // import gql from
@@ -8,11 +8,16 @@ import { useSubscription, useMutation,useQuery,gql} from '@apollo/client'
 import { useAccessToken, useUserData } from '@nhost/react'
 
 
-const MY_CHATS = gql`query MyChats {
-chat_participants{
-chat_id
-chat { id title created_at}
-}
+const MY_CHATS = gql`subscription Getchats($user_id: uuid) {
+  chats(where: {user_id: {_eq: $user_id}}, order_by: {created_at: asc})
+  {
+    id
+    title
+    messages{
+      sender
+      content
+    }
+  }
 }`;
 
 const CREATE_CHAT = gql`
@@ -34,13 +39,13 @@ const ADD_SELF_TO_CHAT = gql`
 }
  `
 
-const SUBSCRIBE_MESSAGES = gql`subscription GetMessages($chat_id: uuid) {
-  messages(where: {chat_id: {_eq: $chat_id}}, order_by: {created_at: asc})
-  {
-    sender
-    content
-  }
-}`;
+// const SUBSCRIBE_MESSAGES = gql`subscription GetMessages($chat_id: uuid) {
+//   messages(where: {chat_id: {_eq: $chat_id}}, order_by: {created_at: asc})
+//   {
+//     sender
+//     content
+//   }
+// }`;
 
 const SEND_MESSAGE = gql`
 mutation SendMessage($chat_id: uuid, $content: String, $sender: String) {
@@ -52,10 +57,22 @@ mutation SendMessage($chat_id: uuid, $content: String, $sender: String) {
 `;
 function Chattingpage() {
     const token = useAccessToken();
-
+    const [chats, setChats] = useState([]);
     const user = useUserData();
     const [activeChatId, setActiveChatId] = useState(null);
+    const chatfetch = useSubscription(MY_CHATS, {
+        variables: { user_id:user.id },
+        skip:!user.id
+    })
+
+
+    // const chatfetch = useQuery(MY_CHATS, {
+    //     variables: { user_id: activeChatId },
+    //     skip:!activeChatId
+        
+    // })
     const [text, setText] = useState('');
+
 
     const [newChatTitle, setNewChatTitle] = useState('');
     const [chatcreationstatus, setChatcreationstatus] = useState('Chatactive')
@@ -72,13 +89,15 @@ function Chattingpage() {
             "sender": "bot",
             "content":`Hello ${user.displayName},Welcome to the chatbot`
         },
-
+        
     ]);
-
-    const { data:chatsData, refetch:refetchChats} = useQuery(MY_CHATS);
+    
+    // const { data:chatsData, refetch:refetchChats} = useQuery(MY_CHATS);
     const [createChat] = useMutation(CREATE_CHAT);
     const [addSelf] = useMutation(ADD_SELF_TO_CHAT);
+    const { username } = useSelector((state) => state.datastore);
     const [sendMessage] = useMutation(SEND_MESSAGE);
+    const [chatlistsstatus, setChatlistsstatus] = useState('Chatlistinactive');
 
     // const { data: messagesData } = useSubscription(SUBSCRIBE_MESSAGES, {
     //     variables: { chatId: activeChatId },
@@ -86,11 +105,11 @@ function Chattingpage() {
     // })
 
     
-    const fetchdata = useSubscription(SUBSCRIBE_MESSAGES, {
+    // const fetchdata = useSubscription(SUBSCRIBE_MESSAGES, {
         
-        variables: { chat_id: activeChatId },
-        skip:!activeChatId
-    })
+    //     variables: { chat_id: activeChatId },
+    //     skip:!activeChatId
+    // })
     // const fetchdata = useSubscription(SUBSCRIBE_MESSAGES, {
         
     //     variables: { chat_id: "55444e51-ecc7-47a5-9f71-c12cd48eebc4"},
@@ -104,11 +123,15 @@ function Chattingpage() {
         if (!newChatTitle.trim()) {
             return;
         }
+        const res = await createChat({variables:{title:newChatTitle,user_id:user.id}});
+        const chatId = res?.data?.insert_chats_one.id;
+        setNewChatTitle('');
+        setChatcreationstatus('Chatinactive');
+        setActiveChatId(chatId)
+        alert('Chat Created')
         try {
             
-            const res = await createChat({variables:{title:newChatTitle,user_id:user.id}});
-            const chatId = res?.data?.insert_chats_one.id;
-
+            
             // await addSelf({ variables: { chatId } });
             const botresponse = await fetch('https://nivashn8n6789.app.n8n.cloud/webhook/chatbotwebsite', {
                 method: "POST",
@@ -117,7 +140,6 @@ function Chattingpage() {
                 }
             })
             
-            alert('Chat Created')
             if (botresponse.status == 200)
             {
 
@@ -128,12 +150,10 @@ function Chattingpage() {
             
             
             
-            setNewChatTitle('');
             // await refetchChats();
-            setActiveChatId(chatId)
-            setChatcreationstatus('Chatinactive');
         }
         catch (e) {
+            sendMessage({variables:{chat_id:chatId,content:`Hello ${username} How can I assist You..😊`,sender:"bot"}})
             alert('Error'+e.message)
         }
     };
@@ -141,6 +161,7 @@ function Chattingpage() {
     const handlesend = async () => {
         // e.preventDefault();
         if (!text.trim() || !activeChatId) {
+            alert(text)
             return;
         }
         await sendMessage({
@@ -148,14 +169,16 @@ function Chattingpage() {
                 chat_id: activeChatId, content: text, sender:'user'
          } });
         setText('');
+
         // console.log(fetchdata)
+        // setFetchedmessage(fetchdata.data.messages);
         
         const chatbotbody = {
             message:text
         }
-         const chatbotres = await fetch('https://nivashn8n6789.app.n8n.cloud/webhook/chatbotwebsite', {
-             method: "POST",
-             headers: {
+        const chatbotres = await fetch('https://nivashn8n6789.app.n8n.cloud/webhook/chatbotwebsite', {
+            method: "POST",
+            headers: {
                  'Content-type':"application/json"
                 },
                 body:JSON.stringify(chatbotbody)
@@ -169,15 +192,31 @@ function Chattingpage() {
             }
         });
         
-        console.log(fetchedmessage.messages)
-        setFetchedmessage(fetchdata.data.messages);
         
        
     }
 
 
 
-    const {username}=useSelector((state)=>state.datastore)
+
+    // useEffect(() => {
+    //     if (fetchdata.data)
+    //     {
+    //         setFetchedmessage(fetchdata.data.messages)
+
+    //     }
+    // },[fetchdata.data])
+    useEffect(() => {
+        if (chatfetch.data) {
+            setChats(chatfetch.data.chats)
+
+        }
+
+        const filteredmsg = chats.filter(chat => chat.id === activeChatId);
+        setFetchedmessage(filteredmsg.length>0 ? filteredmsg[0].messages : []);
+
+
+    },[chatfetch.data][activeChatId])
     return (
         <div style={{width:"100%",height:"100%",display:"flex",justifyContent:"center",alignItems:"center"}}>
 
@@ -188,13 +227,21 @@ function Chattingpage() {
               <div style={{display:"flex",justifyContent:"center",height:"200px",alignItems:"center"}}>
                   <div style={{width:"50px",height:"50px"}}><img src={messgeicon} style={{width:"100%",height:"100%"}}></img></div>
               </div>
-              <div className='sidemenu'>
+                    <div className='sidemenu' onClick={() => {
+                        if (chatlistsstatus == "Chatlistinactive")
+                        {
+                            setChatlistsstatus('Chatlistactive')
+                        }
+                        else {
+                            setChatlistsstatus('Chatlistinactive');
+                        }
+              }}>
                   <div style={{marginLeft:"-50px"}}><FaMessage/></div>
-                  <div>Chat</div>
+                  <div>Chats</div>
               </div>
-              <div className='sidemenu'>
-                  <div style={{marginLeft:"-35px"}}><FaClockRotateLeft/></div>
-                  <div>History</div>
+              <div className='sidemenu' onClick={()=>{setChatcreationstatus('Chatactive')}} >
+                  <div style={{marginLeft:"-21px"}}><FaPlus/></div>
+                  <div>New Chat</div>
               </div>
               <div className='sidemenu'>
                   <div style={{marginLeft:"-37px"}}><FaUser/></div>
@@ -203,9 +250,24 @@ function Chattingpage() {
               <div className='sidemenu'>
                   <div style={{marginLeft:"-28px"}}><FaGear/></div>
                   <div>Settings</div>
-              </div>
+                    </div>
+                    <div className={chatlistsstatus}>
+                    
+                    <div id="chatslists">
+                            {
+                                chats.map((val, i) => (
+                                    <div className='listitem' onClick={()=>{setActiveChatId(val.id)}}>
+                                        <div>{val.title}</div>
+                                    </div>
+                                )
+                                  
+                                )
+                     } 
+                    </div>
+                    </div> 
         
-          </div>
+                </div>
+                
           <div style={{ backgroundColor: "white" }} id="chattingcontainer">
               <div id="navheader">
                   <div id="chatlogo">Chat</div>
@@ -214,11 +276,11 @@ function Chattingpage() {
               </div>
                     <div id="Messageplate">
                         {
-                            fetchedmessage.map((val, i) =>
-                                <div style={{display:"flex",justifyContent:val.sender=="bot" ? "start":"end"}}>
-                                    <div style={{width:"200px",height:"50px",backgroundColor:"lightblue",borderRadius:"8px"}}>{val.content }</div>
+                            fetchedmessage?fetchedmessage.map((val, i) =>
+                                <div style={{display:"flex",marginTop:"10px", justifyContent:val.sender=="bot" ? "start":"end"}}>
+                                    <div style={{minWidth:"100px",maxWidth:"300px",minHeight:"30px",textAlign:"center",padding:"7px",backgroundColor:"lightblue",borderRadius:"8px"}}>{val.content }</div>
                                   </div>
-                            )
+                            ):null
                         }
                   
               </div>
@@ -249,7 +311,10 @@ function Chattingpage() {
                         <div style={{display:"flex",justifyContent:"center",marginTop:"150px"}}>
 
                             <div id="chatcreationbox" >
-                                <div id="xclose" onClick={() => { setChatcreationstatus('Chatinactive') }}>X</div>
+                                <div id="xclose" onClick={() => {
+                                    setActiveChatId(chats[chats.length-1].id)
+                                    setChatcreationstatus('Chatinactive')
+                                }}>X</div>
                                 <div style={{textAlign:"center",fontWeight:"bold"}}>Create a Topic</div>
                 <div>
                     <label>Topic</label>

@@ -129,32 +129,30 @@ function Chattingpage() {
         setChatcreationstatus('Chatinactive');
         setActiveChatId(chatId)
         alert('Chat Created')
-        try {
+            
             
             
             // await addSelf({ variables: { chatId } });
-            const botresponse = await fetch('https://nivashn8n6789.app.n8n.cloud/webhook/chatbotwebsite', {
-                method: "POST",
+            const botresponse = await fetch('https://chatbotwebbackend-3ewa.onrender.com/api/chatbotres/', {
+                method:"POST",
                 headers: {
-                    "Content-type":"application/json"
-                }
+                    "Content-Type":"application/json"
+                },
+                body:JSON.stringify({userInput:text})
             })
-            
+        
+        const boddata = await botresponse.json();
+    
             if (botresponse.status == 200)
             {
 
-                const boddata = await botresponse.json();
                 const botreply = boddata.reply;
                 await sendMessage({ variables: { chat_id: chatId, content: botreply, sender: 'bot' } })
+                alert('sucee')
             }
-            
-            
-            
-            // await refetchChats();
-        }
-        catch (e) {
+    else
+        {
             sendMessage({variables:{chat_id:chatId,content:`Hello ${username} How can I assist You..😊`,sender:"bot"}})
-            alert('Error'+e.message)
         }
     };
 
@@ -173,15 +171,12 @@ function Chattingpage() {
         // console.log(fetchdata)
         // setFetchedmessage(fetchdata.data.messages);
         
-        const chatbotbody = {
-            message:text
-        }
-        const chatbotres = await fetch('https://nivashn8n6789.app.n8n.cloud/webhook/chatbotwebsite', {
+        const chatbotres = await fetch('https://chatbotwebbackend-3ewa.onrender.com/api/chatbotres/', {
             method: "POST",
             headers: {
                  'Content-type':"application/json"
                 },
-                body:JSON.stringify(chatbotbody)
+                body:JSON.stringify({userInput:text})
             })
             const chatbotreply = await chatbotres.json();
             
@@ -323,7 +318,7 @@ function Chattingpage() {
                     <input type="text" placeholder='Enter the Topic' required value={newChatTitle} onChange={(e)=>{setNewChatTitle(e.target.value)}} />
                 </div>
                 <div style={{display:"flex",justifyContent:"center"}}>
-                    <button type="submit" onClick={()=>{console.log(token)}} >Create</button>
+                    <button type="submit">Create</button>
                 </div>
             </div>
         </div>
